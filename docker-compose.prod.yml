@@ -14,6 +14,14 @@ services:
     ports:
       - "127.0.0.1:18790:18790"
     restart: always
+    # VPS chỉ có 1 vCPU — compose gốc giới hạn cpus: '2.0' sẽ bị Docker từ chối
+    # ("range of CPUs is from 0.01 to 1.00, as there are only 1 CPUs available").
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+          pids: 200
 
   postgres:
     ports: []
