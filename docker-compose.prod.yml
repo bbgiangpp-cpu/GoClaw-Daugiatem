@@ -1,0 +1,20 @@
+# Production override cho troly.pro.vn.
+# Dùng cùng với docker-compose.yml + docker-compose.postgres.yml:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml up -d
+#
+# Mục đích:
+#   - Không expose goclaw (18790) và postgres (5432) ra 0.0.0.0 — chỉ Nginx
+#     trên localhost mới gọi được. Public traffic luôn đi qua Nginx (443).
+#   - Dùng image build từ CI của repo này thay vì image upstream mặc định.
+
+services:
+  goclaw:
+    image: ${GOCLAW_IMAGE:-ghcr.io/bbgiangpp-cpu/goclaw-challenger:latest}
+    ports:
+      - "127.0.0.1:18790:18790"
+    restart: always
+
+  postgres:
+    ports: []
+    restart: always
