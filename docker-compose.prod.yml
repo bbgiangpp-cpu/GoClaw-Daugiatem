@@ -1,4 +1,4 @@
-# Production override cho troly.pro.vn.
+# Production override cho daugiatem.com.
 # Dùng cùng với docker-compose.yml + docker-compose.postgres.yml:
 #
 #   docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml up -d
@@ -10,17 +10,17 @@
 
 services:
   goclaw:
-    image: ${GOCLAW_IMAGE:-ghcr.io/bbgiangpp-cpu/goclaw-challenger:latest}
+    image: ${GOCLAW_IMAGE:-ghcr.io/bbgiangpp-cpu/goclaw-daugiatem:latest}
     ports:
       - "127.0.0.1:18790:18790"
     restart: always
-    # VPS chỉ có 1 vCPU — compose gốc giới hạn cpus: '2.0' sẽ bị Docker từ chối
-    # ("range of CPUs is from 0.01 to 1.00, as there are only 1 CPUs available").
+    # VPS có 2 vCPU / ~1.9GB RAM, dùng chung với Postgres trên cùng máy —
+    # chừa lại tài nguyên cho hệ điều hành + Postgres.
     deploy:
       resources:
         limits:
           memory: 1G
-          cpus: '1.0'
+          cpus: '1.5'
           pids: 200
 
   postgres:
