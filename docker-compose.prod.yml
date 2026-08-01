@@ -4,15 +4,20 @@
 #   docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml up -d
 #
 # Mục đích:
-#   - Không expose goclaw (18790) và postgres (5432) ra 0.0.0.0 — chỉ Nginx
-#     trên localhost mới gọi được. Public traffic luôn đi qua Nginx (443).
 #   - Dùng image build từ CI của repo này thay vì image upstream mặc định.
+#   - goclaw (18790) và postgres (5432) publish ra 0.0.0.0 (không giới hạn
+#     127.0.0.1 — Docker Engine trên VPS này gặp lỗi nội bộ khi publish port
+#     giới hạn vào 127.0.0.1 cụ thể: "address already in use" dù cổng thực
+#     sự trống, xác nhận bằng bind test thuần ngoài Docker). An toàn vì
+#     UFW trên VPS mặc định deny toàn bộ incoming, chỉ allow 22/80/443 —
+#     18790/5432 không lọt ra ngoài dù publish 0.0.0.0. Public traffic luôn
+#     đi qua Nginx (443) như bình thường.
 
 services:
   goclaw:
     image: ${GOCLAW_IMAGE:-ghcr.io/bbgiangpp-cpu/goclaw-daugiatem:latest}
     ports:
-      - "127.0.0.1:18790:18790"
+      - "0.0.0.0:18790:18790"
     restart: always
     # VPS có 2 vCPU / ~1.9GB RAM, dùng chung với Postgres trên cùng máy —
     # chừa lại tài nguyên cho hệ điều hành + Postgres.
@@ -24,5 +29,4 @@ services:
           pids: 200
 
   postgres:
-    ports: []
     restart: always
