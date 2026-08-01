@@ -57,6 +57,7 @@ jobs:
           script: |
             set -euo pipefail
             cd /home/deploy/goclaw-daugiatem
+            git pull origin main
             docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml pull
             docker compose -f docker-compose.yml -f docker-compose.postgres.yml -f docker-compose.prod.yml up -d
             docker image prune -f
